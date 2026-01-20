@@ -1,6 +1,6 @@
 import { useRef, useEffect } from 'react';
-import { MessageCircle, X, Minus } from 'lucide-react';
-import { useChat } from '@/hooks/useChat';
+import { MessageCircle, X, Minus, ShoppingCart } from 'lucide-react';
+import { useEnhancedChat } from '@/hooks/useEnhancedChat';
 import { ChatMessage } from './ChatMessage';
 import { ChatInput } from './ChatInput';
 import { TypingIndicator } from './TypingIndicator';
@@ -14,7 +14,28 @@ interface ChatWindowProps {
 }
 
 export const ChatWindow = ({ isOpen, isMinimized, onClose, onMinimize }: ChatWindowProps) => {
-  const { messages, isTyping, state, handleOptionSelect, handleTextInput } = useChat();
+  const {
+    messages,
+    isTyping,
+    state,
+    isAddingToCart,
+    handleOptionSelect,
+    handleTextInput,
+    handleViewProductDetails,
+    handleAddToCart,
+    handleAddToCartFromDetail,
+    handleBackFromDetail,
+    cartItems,
+    cartCount,
+    cartTotal,
+    handleRemoveFromCart,
+    handleUpdateCartQuantity,
+    handleContinueShopping,
+    handleCheckout,
+    handleSendSupportEmail,
+    handleBackFromSupport,
+  } = useEnhancedChat();
+  
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -42,6 +63,12 @@ export const ChatWindow = ({ isOpen, isMinimized, onClose, onMinimize }: ChatWin
           </div>
         </div>
         <div className="flex items-center gap-1">
+          {cartCount > 0 && (
+            <div className="flex items-center gap-1 px-2 py-1 bg-primary-foreground/20 rounded-full mr-2">
+              <ShoppingCart className="w-3.5 h-3.5" />
+              <span className="text-xs font-medium">{cartCount}</span>
+            </div>
+          )}
           <button
             onClick={onMinimize}
             className="p-1.5 hover:bg-primary-foreground/10 rounded-lg transition-colors"
@@ -68,6 +95,19 @@ export const ChatWindow = ({ isOpen, isMinimized, onClose, onMinimize }: ChatWin
                 key={message.id}
                 message={message}
                 onOptionSelect={handleOptionSelect}
+                onViewProductDetails={handleViewProductDetails}
+                onAddToCart={handleAddToCart}
+                onAddToCartFromDetail={handleAddToCartFromDetail}
+                onBackFromDetail={handleBackFromDetail}
+                isAddingToCart={isAddingToCart}
+                cartItems={cartItems}
+                cartTotal={cartTotal}
+                onRemoveFromCart={handleRemoveFromCart}
+                onUpdateCartQuantity={handleUpdateCartQuantity}
+                onContinueShopping={handleContinueShopping}
+                onCheckout={handleCheckout}
+                onSendSupportEmail={handleSendSupportEmail}
+                onBackFromSupport={handleBackFromSupport}
               />
             ))}
             {isTyping && <TypingIndicator />}
@@ -80,9 +120,11 @@ export const ChatWindow = ({ isOpen, isMinimized, onClose, onMinimize }: ChatWin
             placeholder={
               state.flow === 'order-input'
                 ? 'Enter Order ID (e.g., ORD-12345)'
+                : state.flow === 'support-compose'
+                ? 'Describe your issue...'
                 : 'Type a message...'
             }
-            disabled={state.flow !== 'order-input' && state.flow !== 'initial'}
+            disabled={!['order-input', 'support-compose', 'human-support', 'initial'].includes(state.flow)}
           />
         </>
       )}

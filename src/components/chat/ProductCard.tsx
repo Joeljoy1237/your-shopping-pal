@@ -1,11 +1,20 @@
 import { Product } from '@/types/chat';
-import { Star } from 'lucide-react';
+import { Star, Eye, ShoppingCart } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface ProductCardProps {
   product: Product;
+  onViewDetails?: (productId: string) => void;
+  onAddToCart?: (productId: string) => void;
+  isAddingToCart?: boolean;
 }
 
-export const ProductCard = ({ product }: ProductCardProps) => {
+export const ProductCard = ({ 
+  product, 
+  onViewDetails, 
+  onAddToCart,
+  isAddingToCart 
+}: ProductCardProps) => {
   return (
     <div className="bg-card rounded-xl border border-border p-4 shadow-soft hover:shadow-elevated transition-shadow duration-200">
       <div className="flex items-start gap-3">
@@ -29,9 +38,30 @@ export const ProductCard = ({ product }: ProductCardProps) => {
           </span>
         ))}
       </div>
-      <button className="w-full mt-3 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors active:scale-[0.98]">
-        View Details
-      </button>
+      <div className="mt-3 flex gap-2">
+        {onViewDetails && (
+          <Button
+            variant="outline"
+            size="sm"
+            className="flex-1 gap-1.5"
+            onClick={() => onViewDetails(product.id)}
+          >
+            <Eye className="w-3.5 h-3.5" />
+            Details
+          </Button>
+        )}
+        {onAddToCart && (
+          <Button
+            size="sm"
+            className="flex-1 gap-1.5"
+            onClick={() => onAddToCart(product.id)}
+            disabled={isAddingToCart}
+          >
+            <ShoppingCart className="w-3.5 h-3.5" />
+            {isAddingToCart ? 'Adding...' : 'Add'}
+          </Button>
+        )}
+      </div>
     </div>
   );
 };

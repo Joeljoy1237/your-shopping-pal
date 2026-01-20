@@ -1,10 +1,19 @@
-export type MessageType = 'text' | 'options' | 'product-results' | 'order-status' | 'quick-actions';
+export type MessageType = 
+  | 'text' 
+  | 'options' 
+  | 'product-results' 
+  | 'order-status' 
+  | 'quick-actions'
+  | 'product-detail'
+  | 'cart-summary'
+  | 'support-email';
 
 export interface ChatOption {
   id: string;
   label: string;
   value: string;
   icon?: string;
+  productId?: string;
 }
 
 export interface Product {
@@ -15,6 +24,9 @@ export interface Product {
   category: string;
   rating: number;
   specs: string[];
+  description?: string | null;
+  availability?: string | null;
+  warranty?: string | null;
 }
 
 export interface OrderStatus {
@@ -23,6 +35,14 @@ export interface OrderStatus {
   estimatedDelivery: string;
   lastUpdate: string;
   location?: string;
+}
+
+export interface SupportEmailData {
+  subject: string;
+  body: string;
+  issueType: string;
+  orderId?: string;
+  productName?: string;
 }
 
 export interface ChatMessage {
@@ -34,6 +54,8 @@ export interface ChatMessage {
   options?: ChatOption[];
   products?: Product[];
   orderStatus?: OrderStatus;
+  productDetail?: Product;
+  supportEmail?: SupportEmailData;
 }
 
 export type ConversationFlow = 
@@ -43,12 +65,16 @@ export type ConversationFlow =
   | 'product-budget'
   | 'product-usage'
   | 'product-results'
+  | 'product-detail'
   | 'order-tracking'
   | 'order-input'
   | 'delivery-info'
   | 'returns-info'
   | 'warranty-info'
   | 'human-support'
+  | 'support-compose'
+  | 'view-cart'
+  | 'checkout'
   | 'laptop'
   | 'phone'
   | 'under-500'
@@ -66,4 +92,10 @@ export interface ConversationState {
   productCategory?: string;
   productBudget?: string;
   productUsage?: string;
+  selectedProductId?: string;
+  supportContext?: {
+    orderId?: string;
+    productName?: string;
+    userMessage?: string;
+  };
 }
