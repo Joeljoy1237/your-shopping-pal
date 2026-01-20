@@ -14,7 +14,158 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      cart_items: {
+        Row: {
+          created_at: string
+          id: string
+          product_id: string
+          quantity: number | null
+          session_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          product_id: string
+          quantity?: number | null
+          session_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          product_id?: string
+          quantity?: number | null
+          session_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cart_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          created_at: string
+          estimated_delivery: string | null
+          id: string
+          last_update: string | null
+          location: string | null
+          order_id: string
+          session_id: string | null
+          status: string
+          total_amount: number | null
+        }
+        Insert: {
+          created_at?: string
+          estimated_delivery?: string | null
+          id?: string
+          last_update?: string | null
+          location?: string | null
+          order_id: string
+          session_id?: string | null
+          status?: string
+          total_amount?: number | null
+        }
+        Update: {
+          created_at?: string
+          estimated_delivery?: string | null
+          id?: string
+          last_update?: string | null
+          location?: string | null
+          order_id?: string
+          session_id?: string | null
+          status?: string
+          total_amount?: number | null
+        }
+        Relationships: []
+      }
+      products: {
+        Row: {
+          availability: string | null
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          image: string
+          name: string
+          price: number
+          rating: number | null
+          specs: string[] | null
+          warranty: string | null
+        }
+        Insert: {
+          availability?: string | null
+          category: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image: string
+          name: string
+          price: number
+          rating?: number | null
+          specs?: string[] | null
+          warranty?: string | null
+        }
+        Update: {
+          availability?: string | null
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image?: string
+          name?: string
+          price?: number
+          rating?: number | null
+          specs?: string[] | null
+          warranty?: string | null
+        }
+        Relationships: []
+      }
+      support_tickets: {
+        Row: {
+          body: string
+          created_at: string
+          email: string | null
+          id: string
+          order_id: string | null
+          product_name: string | null
+          session_id: string
+          status: string | null
+          subject: string
+          ticket_type: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          order_id?: string | null
+          product_name?: string | null
+          session_id: string
+          status?: string | null
+          subject: string
+          ticket_type: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          order_id?: string | null
+          product_name?: string | null
+          session_id?: string
+          status?: string | null
+          subject?: string
+          ticket_type?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
