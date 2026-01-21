@@ -75,6 +75,7 @@ export type ConversationFlow =
   | 'support-compose'
   | 'view-cart'
   | 'checkout'
+  | 'faq'
   | 'laptop'
   | 'phone'
   | 'under-500'
