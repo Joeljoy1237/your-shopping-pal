@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { ChatMessage, ChatOption, ConversationState, ConversationFlow, Product } from '@/types/chat';
 import { useProducts, DatabaseProduct } from '@/hooks/useProducts';
+import { faqs } from '@/data/faqs';
 import { useOrders } from '@/hooks/useOrders';
 import { useCart } from '@/hooks/useCart';
 import { useSupportTickets } from '@/hooks/useSupportTickets';
@@ -44,9 +45,10 @@ const getInitialMessage = (): ChatMessage => createMessage(
       { id: '1', label: '🔍 Find Products', value: 'product-discovery' },
       { id: '2', label: '🛒 View Cart', value: 'view-cart' },
       { id: '3', label: '📦 Track Order', value: 'order-tracking' },
-      { id: '4', label: '🚚 Delivery Info', value: 'delivery-info' },
-      { id: '5', label: '↩️ Returns', value: 'returns-info' },
-      { id: '6', label: '👤 Talk to Human', value: 'human-support' },
+      { id: '4', label: '❓ FAQ', value: 'faq' },
+      { id: '5', label: '🚚 Delivery Info', value: 'delivery-info' },
+      { id: '6', label: '↩️ Returns', value: 'returns-info' },
+      { id: '7', label: '👤 Talk to Human', value: 'human-support' },
     ],
   }
 );
@@ -447,6 +449,29 @@ export const useEnhancedChat = () => {
                   body,
                   issueType: 'general',
                 },
+              }
+            )
+          );
+          break;
+
+        case 'faq':
+          setState({ flow: 'faq' });
+          const faqList = faqs.slice(0, 5).map((faq, index) => 
+            `${index + 1}. **${faq.question}**\n   ${faq.answer.split('\n')[0]}`
+          ).join('\n\n');
+          addBotMessage(
+            createMessage(
+              `❓ **Frequently Asked Questions**\n\nHere are some common questions:\n\n${faqList}\n\n---\n\n💡 Need more help? Select an option below:`,
+              'bot',
+              {
+                type: 'options',
+                options: [
+                  { id: '1', label: '🚚 Shipping Questions', value: 'delivery-info' },
+                  { id: '2', label: '↩️ Returns & Refunds', value: 'returns-info' },
+                  { id: '3', label: '🛡️ Warranty Info', value: 'warranty-info' },
+                  { id: '4', label: '👤 Talk to Human', value: 'human-support' },
+                  { id: '5', label: '🏠 Back to Menu', value: 'restart' },
+                ],
               }
             )
           );
