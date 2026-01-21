@@ -489,10 +489,47 @@ export const useEnhancedChat = () => {
     [state, addBotMessage, getFilteredProducts, generateSupportEmail]
   );
 
+  // Simple token-based fuzzy matching
+  const findBestMatch = (query: string) => {
+    const tokens = query.toLowerCase().replace(/[^\w\s]/g, '').split(/\s+/).filter(t => t.length >= 2);
+    if (tokens.length === 0) return null;
+
+    let bestMatch = null;
+    let maxScore = 0;
+
+    faqs.forEach(faq => {
+      let score = 0;
+
+      tokens.forEach(token => {
+        const regex = new RegExp(`\\b${token}\\b`, 'i');
+
+        // Very High weight: Exact word match in question
+        if (regex.test(faq.question)) score += 10;
+        // High weight: Substring match in question (fallback)
+        else if (faq.question.toLowerCase().includes(token)) score += 2;
+
+        // Medium weight: Match in category
+        if (regex.test(faq.category)) score += 5;
+
+        // Low weight: Match in answer
+        if (faq.answer.toLowerCase().includes(token)) score += 1;
+      });
+
+      if (score > maxScore) {
+        maxScore = score;
+        bestMatch = faq;
+      }
+    });
+
+    // Threshold ensures we don't return random matches for unrelated text
+    return maxScore >= 5 ? bestMatch : null;
+  };
+
   const handleTextInput = useCallback(
     async (text: string) => {
       setMessages((prev) => [...prev, createMessage(text, 'user')]);
 
+      // Order Tracking Flow
       if (state.flow === 'order-input') {
         const order = await getOrderByOrderId(text);
         if (order) {
@@ -517,8 +554,7 @@ export const useEnhancedChat = () => {
               }
             )
           );
-          
-          // Store context for potential support email
+
           setState((prev) => ({
             ...prev,
             supportContext: { orderId: order.order_id },
@@ -540,8 +576,11 @@ export const useEnhancedChat = () => {
             )
           );
         }
-      } else if (state.flow === 'support-compose' || state.flow === 'human-support') {
-        // User provided additional context for support
+        return;
+      }
+
+      // Support Email Flow
+      if (state.flow === 'support-compose' || state.flow === 'human-support') {
         const issueType = detectIssueType(text);
         const { subject, body } = generateSupportEmail(issueType, {
           ...state.supportContext,
@@ -569,7 +608,59 @@ export const useEnhancedChat = () => {
             }
           )
         );
+        return;
       }
+
+      // General / FAQ NLP Flow (Handles 'initial', 'faq', and others)
+      const bestMatch = findBestMatch(text);
+      if (bestMatch) {
+        // Different response style for 'chat' vs 'informational' queries
+        const isChat = bestMatch.category === 'chat';
+
+        const messageContent = isChat
+          ? bestMatch.answer
+          : `Here is some information about that:\n\n**${bestMatch.question}**\n${bestMatch.answer}`;
+
+        const options = isChat
+          ? [
+            { id: '1', label: '🏠 Menu', value: 'restart' },
+            { id: '2', label: '❓ Ask Question', value: 'faq' },
+          ]
+          : [
+            { id: '1', label: '👍 That helped', value: 'restart' },
+            { id: '2', label: '🔍 Search again', value: 'faq' },
+            { id: '3', label: '👤 Human Support', value: 'human-support' },
+          ];
+
+        addBotMessage(
+          createMessage(
+            messageContent,
+            'bot',
+            {
+              type: 'options',
+              options,
+            }
+          )
+        );
+        setState({ flow: 'faq' }); // Switch context to FAQ so they can ask more
+        return;
+      }
+
+      // Fallback if no match found
+      addBotMessage(
+        createMessage(
+          "I didn't quite catch that. I can help with finding products, tracking orders, or answering questions. What would you like to do?",
+          'bot',
+          {
+            type: 'quick-actions',
+            options: [
+              { id: '1', label: '🔍 Find Products', value: 'product-discovery' },
+              { id: '4', label: '❓ FAQ', value: 'faq' },
+              { id: '7', label: '👤 Talk to Human', value: 'human-support' },
+            ],
+          }
+        )
+      );
     },
     [state, addBotMessage, getOrderByOrderId, detectIssueType, generateSupportEmail]
   );

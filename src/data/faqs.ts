@@ -2,7 +2,7 @@ export interface FAQ {
   id: string;
   question: string;
   answer: string;
-  category: 'shipping' | 'returns' | 'payment' | 'products' | 'account';
+  category: 'shipping' | 'returns' | 'payment' | 'products' | 'account' | 'chat';
 }
 
 export const faqs: FAQ[] = [
@@ -53,5 +53,35 @@ export const faqs: FAQ[] = [
     question: 'How do I create an account?',
     answer: 'Click the **Sign In** button in the navigation bar, then select "Sign Up". Enter your email and create a password. Your account lets you track orders and save your cart.',
     category: 'account',
+  },
+  {
+    id: '9',
+    question: 'Hello / Hi / Hey',
+    answer: '👋 Hi there! I\'m your virtual shopping assistant. I can help you find products, track orders, or answer questions about our store. How can I help you today?',
+    category: 'chat',
+  },
+  {
+    id: '10',
+    question: 'How are you?',
+    answer: 'I\'m doing great, thanks for asking! 🤖 I\'m ready to help you find some amazing deals. What are you looking for?',
+    category: 'chat',
+  },
+  {
+    id: '11',
+    question: 'Thank you / Thanks',
+    answer: 'You\'re welcome! Happy to help. Is there anything else you need?',
+    category: 'chat',
+  },
+  {
+    id: '12',
+    question: 'Bye / Goodbye',
+    answer: 'Goodbye! 👋 Have a wonderful day and happy shopping! Come back soon!',
+    category: 'chat',
+  },
+  {
+    id: '13',
+    question: 'Who are you?',
+    answer: 'I\'m the ShopSmart virtual assistant. I\'m here to help you navigate our store, find products, and manage your orders.',
+    category: 'chat',
   },
 ];

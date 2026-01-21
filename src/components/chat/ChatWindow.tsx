@@ -124,7 +124,7 @@ export const ChatWindow = ({ isOpen, isMinimized, onClose, onMinimize }: ChatWin
                 ? 'Describe your issue...'
                 : 'Type a message...'
             }
-            disabled={!['order-input', 'support-compose', 'human-support', 'initial'].includes(state.flow)}
+            disabled={!['order-input', 'support-compose', 'human-support', 'initial', 'faq'].includes(state.flow)}
           />
         </>
       )}
